@@ -1,0 +1,16 @@
+{
+  "name": "bench-flumelog",
+  "version": "1.0.0",
+  "description": "a simple benchmark of flumedb log implementations.",
+  "main": "index.js",
+  "dependencies": {
+    "pull-paramap": "^1.2.1",
+    "pull-stream": "^3.5.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
