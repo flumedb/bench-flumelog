@@ -43,6 +43,8 @@ once it has read the entire log, but random continues for 10 seconds.
 
 ### [flumelog-idb](https://github.com/flumedb/flumelog-idb)
 
+these tests on lenovo x201
+
 (firefox)
 ```
 name, ops/second, mb/second, ops, total-mb, seconds
@@ -61,10 +63,25 @@ random, 5695.873, 0.72, 57010, 7.215, 10.009
 
 something about indexed db is making this very slow!
 
+---
 
+these runs on Samsung J2, which was the cheapest "smart"
+phone I could purchase at my local shop, for $220 NZD. (~158 USD)
 
+(mobile chrome, samsung J2)
+```
+name, ops/second, mb/second, ops, total-mb, seconds
+append, 1884.024, 0.238, 20485, 2.591, 10.873
+stream, 839.716, 0.106, 8398, 1.062, 10.001
+random, 1060.481, 0.134, 10608, 1.341, 10.003
+```
 
+(mobile firefox, samsung J2)
+```
+name, ops/second, mb/second, ops, total-mb, seconds
+append, 2273.374, 0.287, 24582, 3.11, 10.813
+stream, 1002.299, 0.126, 10025, 1.268, 10.002
+random, 1253.374, 0.158, 12535, 1.586, 10.001
+```
 
-
-
-
+mobile is 3-4 times slower.
