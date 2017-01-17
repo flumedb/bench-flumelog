@@ -23,15 +23,15 @@ function length(data) {
   return data.length || data.value.length
 }
 
-function log (str) {
+function print (str) {
   str = [].slice.call(arguments).map(function (s) {
     return 'string' === typeof s ? s : ~~(s*1000)/1000
   }).join(', ')
 
-  if('undefined' === typeof window) {
+  if('undefined' !== typeof window) {
     var pre = document.createElement('pre')
     pre.textContent = str
-    document.appendChild(pre)
+    document.body.appendChild(pre)
   }
   console.log(str)
 }
@@ -42,7 +42,7 @@ module.exports = function (createLog, N, T) {
   var log = createLog()
   var seqs = []
 
-  console.log('name, ops/second, mb/second, ops, total-mb, seconds')
+  print('name, ops/second, mb/second, ops, total-mb, seconds')
 
   log.since.once(function () {
   //how many items can you append in 10 seconds.
@@ -63,7 +63,7 @@ module.exports = function (createLog, N, T) {
         if(Date.now() - start > 10e3) return false
       }, function () {
         var time = (Date.now() - start)/1000
-        console.log('append', c/time, (total/MB)/time, c, total/MB, time)
+        print('append', c/time, (total/MB)/time, c, total/MB, time)
         next2()
       })
     )
@@ -80,7 +80,7 @@ module.exports = function (createLog, N, T) {
         if(Date.now() - start > 10e3) return false
       }, function () {
         var time = (Date.now() - start)/1000
-        console.log('stream', c/time, (total/MB)/time, c, total/MB, time)
+        print('stream', c/time, (total/MB)/time, c, total/MB, time)
         next3()
       })
     )
@@ -101,28 +101,8 @@ module.exports = function (createLog, N, T) {
         if(Date.now() - start > 10e3) return false
       }, function () {
         var time = (Date.now() - start)/1000
-        console.log('random', c/time, (total/MB)/time, c, total/MB, time)
+        print('random', c/time, (total/MB)/time, c, total/MB, time)
       })
     )
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
