@@ -25,7 +25,7 @@ function length(data) {
 
 function print (str) {
   str = [].slice.call(arguments).map(function (s) {
-    return 'string' === typeof s ? s : ~~(s*1000)/1000
+    return 'string' === typeof s || Number.isInteger(s) ? s : Math.floor(s*1000)/1000
   }).join(', ')
 
   if('undefined' !== typeof window) {
@@ -81,9 +81,32 @@ module.exports = function (createLog, N, T) {
       }, function () {
         var time = (Date.now() - start)/1000
         print('stream', c/time, (total/MB)/time, c, total/MB, time)
-        next3()
+        next_para()
       })
     )
+  }
+
+  function next_para () {
+    var total = 0, c = 0, start = Date.now()
+    var N = 10, i = 0
+    var n = N
+    for(var i = 0; i < N; i++)
+      pull(
+        log.stream(),
+        pull.drain(function item (d) {
+          c++;
+          total += length(d)
+          seqs.push(d.seq)
+          if(Date.now() - start > 10e3) return false
+        }, function () {
+          if(--n) return
+          var time = (Date.now() - start)/1000
+          print('stream10', (c/time), ((total/MB)/time), c, (total/MB), time)
+          next3()
+        })
+      )
+
+
   }
 
   function next3 () {
@@ -106,3 +129,7 @@ module.exports = function (createLog, N, T) {
     )
   }
 }
+
+
+
+
