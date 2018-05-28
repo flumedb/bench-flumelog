@@ -1,4 +1,3 @@
-
 var pull = require('pull-stream')
 var paramap = require('pull-paramap')
 
@@ -72,7 +71,7 @@ module.exports = function (createLog, N, T) {
   function next2 () {
     var total = 0, c = 0, start = Date.now()
     pull(
-      log.stream(),
+      log.stream({cache: false}),
       pull.drain(function (d) {
         c++
         total += length(d)
@@ -105,8 +104,6 @@ module.exports = function (createLog, N, T) {
           next3()
         })
       )
-
-
   }
 
   function next3 () {
