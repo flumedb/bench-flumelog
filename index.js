@@ -1,4 +1,3 @@
-
 var pull = require('pull-stream')
 var paramap = require('pull-paramap')
 
@@ -81,11 +80,28 @@ module.exports = function (createLog, N, T) {
       }, function () {
         var time = (Date.now() - start)/1000
         print('stream', c/time, (total/MB)/time, c, total/MB, time)
-        next_para()
+        next2nocache()
       })
     )
   }
 
+  function next2nocache () {
+    var total = 0, c = 0, start = Date.now()
+    pull(
+      log.stream({cache: false}),
+      pull.drain(function (d) {
+        c++
+        total += length(d)
+        seqs.push(d.seq)
+        if(Date.now() - start > 10e3) return false
+      }, function () {
+        var time = (Date.now() - start)/1000
+        print('stream no cache', c/time, (total/MB)/time, c, total/MB, time)
+        next_para()
+      })
+    )
+  }
+ 
   function next_para () {
     var total = 0, c = 0, start = Date.now()
     var N = 10, i = 0
@@ -105,8 +121,6 @@ module.exports = function (createLog, N, T) {
           next3()
         })
       )
-
-
   }
 
   function next3 () {
