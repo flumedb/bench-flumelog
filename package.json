@@ -1,6 +1,6 @@
 {
   "name": "bench-flumelog",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "description": "a simple benchmark of flumedb log implementations.",
   "main": "index.js",
   "dependencies": {
