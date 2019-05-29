@@ -1,12 +1,14 @@
 var pull = require('pull-stream')
 var paramap = require('pull-paramap')
 
+var TIME = 5e3
+
 var a = []
 while(a.length < 1000) {
     var v = {seq: a.length, random: Math.random(), time: new Date().toString(), foo: {bar: Math.random() < 0.5, length: 0}}
     v.length = JSON.stringify(v).length
     v.length = JSON.stringify(v).length
-    a.push(v)
+    a.push(Buffer.from(JSON.stringify(v)))
   }
 
 function generate () {
@@ -27,7 +29,7 @@ function print (str) {
     return 'string' === typeof s || Number.isInteger(s) ? s : Math.floor(s*1000)/1000
   }).join(', ')
 
-  if('undefined' !== typeof window) {
+  if('undefined' !== typeof window && document.body) {
     var pre = document.createElement('pre')
     pre.textContent = str
     document.body.appendChild(pre)
@@ -35,15 +37,14 @@ function print (str) {
   console.log(str)
 }
 
-module.exports = function (createLog, N, T) {
+module.exports = function (createLog, N, T, encode) {
 
   var start = Date.now()
   var log = createLog()
   var seqs = []
-
+  encode = encode || function (e) { return e }
   print('name, ops/second, mb/second, ops, total-mb, seconds')
-
-  log.since.once(function () {
+  log.since.once(function (v) {
   //how many items can you append in 10 seconds.
     next()
   })
@@ -56,11 +57,13 @@ module.exports = function (createLog, N, T) {
         c ++
         total += length(data)
 //        return cb()
-        log.append(data, cb)
-      }, 4*1024),
+//        console.log('append', c)
+        log.append(encode(data), cb)
+      }, 16),
       pull.drain(function () {
-        if(Date.now() - start > 10e3) return false
-      }, function () {
+        if(Date.now() - start > TIME) return false
+      }, function (err) {
+        if(err && err != true) throw err
         var time = (Date.now() - start)/1000
         print('append', c/time, (total/MB)/time, c, total/MB, time)
         next2()
@@ -76,8 +79,9 @@ module.exports = function (createLog, N, T) {
         c++
         total += length(d)
         seqs.push(d.seq)
-        if(Date.now() - start > 10e3) return false
-      }, function () {
+        if(Date.now() - start > TIME) return false
+      }, function (err) {
+        if(err && err!=true) throw err
         var time = (Date.now() - start)/1000
         print('stream', c/time, (total/MB)/time, c, total/MB, time)
         next2nocache()
@@ -93,7 +97,7 @@ module.exports = function (createLog, N, T) {
         c++
         total += length(d)
         seqs.push(d.seq)
-        if(Date.now() - start > 10e3) return false
+        if(Date.now() - start > TIME) return false
       }, function () {
         var time = (Date.now() - start)/1000
         print('stream no cache', c/time, (total/MB)/time, c, total/MB, time)
@@ -113,7 +117,7 @@ module.exports = function (createLog, N, T) {
           c++;
           total += length(d)
           seqs.push(d.seq)
-          if(Date.now() - start > 10e3) return false
+          if(Date.now() - start > TIME) return false
         }, function () {
           if(--n) return
           var time = (Date.now() - start)/1000
@@ -135,7 +139,7 @@ module.exports = function (createLog, N, T) {
       pull.drain(function (d) {
         c++
         total += length(d)
-        if(Date.now() - start > 10e3) return false
+        if(Date.now() - start > TIME) return false
       }, function () {
         var time = (Date.now() - start)/1000
         print('random', c/time, (total/MB)/time, c, total/MB, time)
@@ -143,7 +147,5 @@ module.exports = function (createLog, N, T) {
     )
   }
 }
-
-
 
 
